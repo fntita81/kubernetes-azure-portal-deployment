@@ -1,0 +1,62 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'Azure subscription - Lankas Cloudworks(d76dd4a9-825d-4f20-b1c5-679b1b9e6f5f)'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      docker build -t kubelankascontainerregistry.azurecr.io/web-game:tag 2048-game
+            az acr login -n kubelankascontainerregistry
+            docker push kubelankascontainerregistry.azurecr.io/web-game:tag
+
+# - task: AzureCLI@2
+#   inputs:
+#     azureSubscription: 'Towards-AzurePortal'
+#     scriptType: 'bash'
+#     scriptLocation: 'inlineScript'
+#     inlineScript: |
+#       docker build -t kubelankascontainerregistry.azurecr.io/web-game:tag 2048-game
+#       az acr login -n kubelankascontainerregistry
+#       docker push kubelankascontainerregistry.azurecr.io/web-game:tag
+
+- script: cat 01_kubernetes_aks/app-deploy.yaml
+
+- task: Kubernetes@1
+  inputs:
+    connectionType: 'Azure Resource Manager'
+    azureSubscriptionEndpoint: 'Azure subscription - Lankas Cloudworks(d76dd4a9-825d-4f20-b1c5-679b1b9e6f5f)'
+    azureResourceGroup: 'kubernetes'
+    kubernetesCluster: 'kubernetes'
+    namespace: 'default'
+    command: 'apply'
+    useConfigurationFile: true
+    configuration: '01_kubernetes_aks'
+    secretType: 'dockerRegistry'
+    containerRegistryType: 'Azure Container Registry'
+    azureSubscriptionEndpointForSecrets: 'Azure subscription - Lankas Cloudworks(d76dd4a9-825d-4f20-b1c5-679b1b9e6f5f)'
+    azureContainerRegistry: 'kubelankascontainerregistry.azurecr.io'
+    forceUpdate: false
+
+# - task: Kubernetes@1
+#   inputs:
+#     connectionType: 'Azure Resource Manager'
+#     azureSubscriptionEndpoint: 'Towards-AzurePortal'
+#     azureResourceGroup: 'kubernetes'
+#     kubernetesCluster: 'kubernetes'
+#     namespace: 'default'
+#     command: 'apply'
+#     useConfigurationFile: true
+#     configuration: '01_kubernetes_aks'
+#     secretType: 'dockerRegistry'
+#     containerRegistryType: 'Azure Container Registry'
+#     azureSubscriptionEndpointForSecrets: 'Towards-AzurePortal'
+#     azureContainerRegistry: 'kubelankascontainerregistry.azurecr.io'
+#     forceUpdate: false
