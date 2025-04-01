@@ -9,13 +9,13 @@ steps:
 
 - task: AzureCLI@2
   inputs:
-    azureSubscription: 'Azure subscription - Lankas Cloudworks(d76dd4a9-825d-4f20-b1c5-679b1b9e6f5f)'
+     azureSubscription: 'Azure subscription 1(d35f8a06-2ca5-4504-902d-d46a9b25215b)'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
-      docker build -t kubelankascontainerregistry.azurecr.io/web-game:tag 2048-game
-            az acr login -n kubelankascontainerregistry
-            docker push kubelankascontainerregistry.azurecr.io/web-game:tag
+      docker build -t fntkubelcontainer.azurecr.io/web-game:v1 2048-game
+      az acr login -n fntkubelcontainer
+      docker push fntkubelcontainer.azurecr.io/web-game:v1
 
 # - task: AzureCLI@2
 #   inputs:
